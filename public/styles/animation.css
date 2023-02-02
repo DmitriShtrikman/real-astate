@@ -1,0 +1,36 @@
+.show {
+    visibility: visible;
+    animation: fadeIn 0.5s;
+    -webkit-animation: fadeIn 0.5s;
+    -moz-animation: fadeIn 0.5s;
+
+}
+
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+        right: -200px
+    } 
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        right: -200px
+    } 
+    to {
+        opacity: 1;
+    }
+}
+
+/* .currency-and-language-block-item ul{    
+    display: grid;
+    grid-template-areas: 
+        'header' 
+        'left right' 
+        'left right';
+    gap: 10px;
+} */
