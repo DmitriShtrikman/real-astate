@@ -17,6 +17,9 @@ const persistConfig = {
       'sorterValue',
       'agreementValue',
       'formInput',
+      'searchInput',
+      'mainSearchInput',
+      'regions',
     ]
   }
   

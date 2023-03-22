@@ -3,7 +3,6 @@ import Header from "../../../components/header/header";
 import SearchAside from "../../../components/search/searchAside";
 import SearchResult from "../../../components/search/searchResult";
 
-
 export const Sale = () => {
     return (
         <>

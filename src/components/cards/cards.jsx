@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { dataRef } from "../../server/googleFirebase";
-import { chosenObject, objectsDataBase } from "../../store/actions/actions";
+import { objectsDataBase } from "../../store/actions/actions";
 import { getCurrencyValue } from "../../store/selectors/selector";
+import useCurrencyCoefficient from "../currency/curencyCoefficient";
 
 export const Cards = (props) => {
     const currency = useSelector(getCurrencyValue);
+    const valuteCoefficient = useCurrencyCoefficient();
     const dispatch = useDispatch();
-    const [cardsList, setCardsList] = useState([]);
+    const [cardsList, setCardsList] = useState([]);        
 
     const cardsListFilter = (
         cardsList.filter((item) => {
@@ -35,8 +37,7 @@ export const Cards = (props) => {
                     ...item[1]
                   }))    
                 setCardsList(newData);      
-                dispatch(objectsDataBase(newData)); 
-                console.log(newData)           
+                dispatch(objectsDataBase(newData));        
             }
         });        
     }, []);
@@ -48,13 +49,13 @@ export const Cards = (props) => {
                 <div className="offers-carousel-card-block">
                     {cardsListFilter.slice(0, 4).map((item) => {
                         return (
-                            <Link key={Math.random() * 10000} to={`/card/${item.id}`} className="card-item-wrp">
+                            <Link key={Math.random() * 10000} to={`/card/${item.id}`} className="offer-card-wrp">
                                 <div className="offer-card">
                                     <img className="offer-card-img" src={item.img[0]} alt="..." />
                                     <div className="offer-card-properties">
                                         <h4 className="offer-card-name">{item.objectName}</h4>
                                         <p className="offer-card-description">{item.description}</p>
-                                        <p className="offer-card-price">Price <span>{item.price}</span> {currency} </p>
+                                        <p className="offer-card-price">Price <span>{Math.round(item.price * valuteCoefficient).toLocaleString()}</span> {currency} </p>
                                     </div>
                                 </div>
                             </Link>

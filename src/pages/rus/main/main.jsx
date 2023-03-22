@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../../../components/footer/footer";
 import Header from "../../../components/header/header";
 import imgTeam from "./img/team.jpg"
@@ -6,27 +6,69 @@ import partners from "./img/partners.jpeg"
 import statistics from "./img/statistics.jpg"
 import Cards from "../../../components/cards/cards";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-
+import { useDispatch, useSelector } from "react-redux";
+import { mainClearInput, mainSelect, pageSelect, regionsDataBase, searchTyping } from "../../../store/actions/actions";
+import { getMainSearchValue, getRegionsDataBase } from "../../../store/selectors/selector";
+import { regionDataRef } from "../../../server/googleFirebase";
+import { onValue } from "firebase/database";
 
 export const Main = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const searchValues = useSelector(getMainSearchValue);  
+    const [regions, setRegions] = useState([]);
+
+    const getDistrict = () => {
+        const district = regions.find(element=>element.id === searchValues.inputCity)
+        let districtArr = []
+        for (let i in district) {
+            if (i!='id') {
+                districtArr.push(<option key={district[i]} value={district[i]}>{district[i]}</option>)
+            }
+        }
+        return districtArr
+    }
+
     const name = ['rent', 'sale', 'new'];
 
     const handleSearch = (e) => {        
         e.preventDefault();
-        console.log('Search');
+        const page = searchValues.inputState;
+        const object = searchValues.inputCountry;
+        navigate(`/${page}/${object}`);
+        dispatch(pageSelect(page));        
+        dispatch(mainClearInput());        
     };
 
     const handleMap = (e) => {        
         e.preventDefault();
-        navigate("/map")
+        navigate("/map");
         console.log('Map');
     };
 
+    const handleSelect = (e) => {
+        e.preventDefault();
+        dispatch(searchTyping(e));
+        dispatch(mainSelect(e));
+    };
+
+    const setActive = () => {document.querySelector('.carousel-inner').children[0].classList.add('active')};
+
+    setTimeout(setActive, 1000)
+
     useEffect(() => {
-        document.querySelector('.carousel-inner').children[0].classList.add('active');
-    });
+        onValue(regionDataRef, (snapshot) => {
+          const data = snapshot.val()
+          if (data) {
+            const newData = Object.entries(data).map((item) => ({
+                id: item[0],
+                ...item[1]
+            }));
+            setRegions(newData);
+            dispatch(regionsDataBase(newData));        
+          }
+        });       
+      }, []);
 
     return (
     <>
@@ -40,7 +82,7 @@ export const Main = () => {
                     <form className="row g-3 main-search-form" id="mainSearch">
                         <div className="col-md-6">
                             <label htmlFor="inputState"  className="form-label">Предложение</label>
-                            <select className="form-select" id="inputState" required>
+                            <select onChange={handleSelect} className="form-select" id="inputState" required>
                                 <option value="rent">Аренда</option>
                                 <option value="sale">Продажа</option>
                                 <option value="new">Новостройки</option>
@@ -50,10 +92,13 @@ export const Main = () => {
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <label htmlFor="inputCountry" className="form-label">Страна</label>
-                            <select className="form-select" id="inputCountry" required>
-                            <option value="rus">Россия</option>
-                            <option value="trk">Турция</option>
+                            <label htmlFor="inputCountry" className="form-label">Объект недвижимости</label>
+                            <select onChange={handleSelect}className="form-select" id="inputCountry" required>
+                                <option value="flat">Квартира</option>
+                                <option value="house">Дом</option>
+                                <option value="office">Офис</option>
+                                <option value="shop">Торговое помещение</option>
+                                <option value="land">Участок</option>
                             </select>
                             <div className="invalid-feedback">
                             Please select a valid option.
@@ -61,28 +106,27 @@ export const Main = () => {
                         </div>
                         <div className="col-md-4">
                             <label htmlFor="inputCity" className="form-label">Город</label>
-                            <select className="form-select" id="inputCity" required>
-                                <option value="antalya">...</option>
-                                <option value="antalya">Анталья</option>
-                                <option value="alanya">Аланья</option>
+                            <select onChange={handleSelect} className="form-select" id="inputCity" required>
+                                <option value=''>...</option>
+                                {regions.map((item) => {
+                                    return <option key={item.id} value={item.id}>{item.id}</option>
+                                })}
                             </select>
                             <div className="invalid-feedback">
                                 Please select a valid option.
                             </div>
                         </div>
                         <div className="col-md-4">
-                            <label htmlFor="inputRegion" className="form-label">Район</label>
-                            <select className="form-select" id="inputRegion" required>
-                                <option value="antalya">...</option>
-                                <option value="konyalti">Конялты</option>
-                                <option value="kepez">Кепез</option>
+                            <label htmlFor="inputDistrict" className="form-label">Район</label>
+                            <select onChange={handleSelect} className="form-select" id="inputDistrict" required>
+                                {getDistrict()}
                             </select>
                             <div className="invalid-feedback">
                                 Please select a valid option.
                             </div>
                         </div>            
                         <div className="search-btn-group">
-                            <button onClick={handleSearch} className="btn btn-primary button-blue" type="submit">
+                            <button onClick={handleSearch} className="btn btn-primary button-blue" type="submit" form="mainSearch">
                                 <svg width="25" height="25" viewBox="0 0 56 56"  xmlns="http://www.w3.org/2000/svg">
                                     <path d="M43.5797 45.7492L30.2447 32.4118C24.3126 36.6292 16.1384 35.5977 11.4401 30.0387C6.74176 24.4797 7.08674 16.2479 12.2337 11.1015C17.3793 5.95289 25.6119 5.60642 31.1719 10.3045C36.732 15.0026 37.7641 23.1776 33.5464 29.1102L46.8814 42.4475L43.582 45.7468L43.5797 45.7492ZM22.1317 11.6661C17.707 11.6652 13.8896 14.7711 12.9908 19.1035C12.092 23.436 14.3587 27.8041 18.4186 29.5634C22.4785 31.3227 27.2158 29.9895 29.7623 26.371C32.3087 22.7525 31.9645 17.8433 28.938 14.6155L30.3497 16.0155L28.7584 14.4289L28.7304 14.4008C26.9845 12.6443 24.6083 11.6595 22.1317 11.6661Z" />
                                     </svg>

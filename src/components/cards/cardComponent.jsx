@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { dataRef } from "../../server/googleFirebase";
 import { getCurrencyValue } from "../../store/selectors/selector";
 import { getPageValue } from "../../store/selectors/selector";
+import useCurrencyCoefficient from "../currency/curencyCoefficient";
 
 export const CardComponent = () => {
     const { id } = useParams();
@@ -13,6 +14,7 @@ export const CardComponent = () => {
     
     const pageKey = useSelector(getPageValue);
     const currency = useSelector(getCurrencyValue);
+    const valuteCoefficient = useCurrencyCoefficient();
     const noAction = (e) => {
         e.preventDefault();
     };
@@ -21,7 +23,7 @@ export const CardComponent = () => {
     const handleChangePhoto = (e, imgNumber) => {
         setMainPhotoKey(imgNumber)
     };
-
+    
     const page = {
         rent: 'Аренда',
         sale: 'Продажа',
@@ -158,7 +160,7 @@ export const CardComponent = () => {
                     <div className="card-item-description-p">{item.description}</div>
                 </div>
                 <div className="card-characters">                
-                    <h3 className="card-price">{item.price}<span>{currency}</span></h3>
+                    <h3 className="card-price">{Math.round(item.price * valuteCoefficient).toLocaleString()}<span>{currency}</span></h3>
                     <div className="card-region-wrp">
                         <p className="card-region">{item.city} / {item.district}</p>
                         <p className="card-region">{item.date}</p>

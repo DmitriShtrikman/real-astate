@@ -67,6 +67,9 @@ header, main, footer
 .margin-0
     margin: 0
 
+.color-red
+    color: $color-red !important
+
 
 /* -- HEADER -- */
 
@@ -87,7 +90,6 @@ header
 
 .header-fixed
     position: fixed
-    left: 0
     top: 0
     transition: all .3s ease 
     -webkit-transition: all .3s ease 
@@ -646,16 +648,31 @@ input::-webkit-inner-spin-button
 
 .search-button
     display: flex
+    flex-direction: column
+    align-items: center
     justify-content: center
     padding: 15px 0 24px 0
     background-color: $color-white
     position: sticky
     bottom: 0
-    z-index: 2
+    z-index: 5
 
 .search-button-item
-    padding: 0.375rem 8rem
+    padding: 0.375rem 1rem
     background-color: $color-blue 
+    width: 90%
+    display: none
+
+.clear-button-item
+    padding: 0.375rem 1rem
+    background-color: $color-red 
+    border-color: $color-red
+    width: 90%
+    margin-top: 10px
+
+.clear-button-item:hover
+    background-color: #dc5461 
+    border-color: $color-red
 
 .filter-button-item
     padding: 0.375rem 1rem
@@ -685,6 +702,14 @@ input::-webkit-inner-spin-button
 .accordion-button:not(.collapsed)
     color: $color-dark-blue
     font-weight: 300
+
+.accordion-checkbox-input
+    display: flex
+    flex-direction: column
+
+.checkbox-input
+    padding-left: 2.5rem
+
 
 /* -- RENT, SALE, NEW -- */
 
@@ -774,7 +799,7 @@ input::-webkit-inner-spin-button
     -moz-transition: 0.5s
     margin-bottom: 20px
 
-.card-item-wrp
+.card-item-wrp, .offer-card-wrp
     text-decoration: none
 
 .card-item:hover
@@ -979,6 +1004,50 @@ input::-webkit-inner-spin-button
     -webkit-transition: 0.5s
     -moz-transition: 0.5s
 
+/* -- AUTHTORISATION -- */   
+
+.login-header, .signin-signup-header
+    padding: 25px 10px
+    font-family: $font-main
+    color: $color-dark-blue
+    font-weight: 700
+    font-size: 17px
+    max-width: 40rem
+    width: 100%
+    text-align: center
+
+.signin-signup-description
+    padding: 0 10px
+    font-family: $font-main
+    color: $color-dark-blue
+    font-weight: 300
+    font-size: 17px
+    max-width: 40rem
+    width: 100%
+    text-align: center
+
+.login-button, .login-btn
+    width: 200px
+    margin: 0 0 25px 0
+
+.signin-signup-header
+    font-size: 32px
+    margin: 0
+    padding-bottom: 10px
+
+.login-btn
+    margin-top: 15px
+    height: 50px
+
+.formGroup
+    margin-bottom: 25px
+
+.form-floating-wrp
+    display: flex
+    flex-direction: column
+    align-items: center
+
+
 
 /* -- LANDLORDS -- */
 
@@ -1000,12 +1069,9 @@ input::-webkit-inner-spin-button
 
 .landlord-button
     align-self: flex-end
-    margin: 30px 30px 15px 80px 
+    margin: 10px 30px 15px 80px 
     width: 230px
     background-color: $color-blue
-
-.landlord-button:hover
-    background-color: $color-dark-blue
 
 .landlord-button-red
     margin: 0 30px 30px 0 
@@ -1070,14 +1136,50 @@ input::-webkit-inner-spin-button
     padding-left: 10px
 
 .input-file
-  opacity: 0
-  visibility: hidden
-  width: 100%
+    opacity: 0
+    display: none
+    width: 100%
+//   visibility: hidden  
+
+.input-file-wrp  
+    display: flex
+    flex-direction: column
+    width: auto 
+    align-items: center
 
 .load-photo-button
     padding: 1rem 1rem
-    width: 100%
+    width: 30%
+    margin-bottom: 25px
     background-color: $color-blue 
+
+.exit-button
+    padding: 1rem 1rem
+    width: 30%
+    margin-bottom: 25px
+    background-color: $color-red 
+
+.exit-button:hover
+    background-color: #e24554
+
+.input-number-wrp
+    display: flex
+    flex-direction: row
+    align-items: center
+    justify-content: space-between
+
+.input-number
+    width: 100%
+
+.input-number-btn
+    width: 36px
+
+.done
+    font-family: roboto, arial, sans-serif !important
+    color: #012158
+    font-weight: 700
+    font-size: 14px
+
 
 
 /* -- CARD COMPONENT -- */  
@@ -1187,7 +1289,9 @@ input::-webkit-inner-spin-button
     color: rgba(33, 37, 41, 0.75)
     font-size: 15px
 
-.card-properties-wrp
+.card-properties-wrp    
+    display: flex
+    flex-direction: column
     width:  405px
 
 .card-properties-ul
@@ -1216,7 +1320,7 @@ input::-webkit-inner-spin-button
 
 .card-divide
     width: 95%
-    border-top: 1px solid #012158
+    border-top: 1px solid $color-dark-blue
     opacity: 50%
 
 .card-properties-mini-item
@@ -1250,7 +1354,37 @@ input::-webkit-inner-spin-button
     overflow: hidden
     text-overflow: ellipsis
     
+/* -- SENT -- */
+.sent-header
+    margin: 30px auto
+    font-family: $font-main
+    color: $color-dark-blue
+    font-size: 22px
+    font-weight: 700
 
+.sent-content
+    align-self: center
+    text-align: center
+    width: 80%
+    margin: 10px auto
+    font-family: $font-main
+    color: $color-dark-blue
+    font-size: 16px
+    font-weight: 400
+
+.sent-button
+    margin: 0 30px 30px 0 
+    align-self: center
+    width: 230px
+    background-color: $color-dark-blue
+    border-color: $color-dark-blue 
+
+.sent-button-red
+    margin: 20px 30px 30px 0 
+    align-self: center
+    width: 230px
+    background-color: $color-red 
+    border-color: $color-red 
 
 
 /* -- IMPORTANT -- */
@@ -1268,7 +1402,7 @@ input::-webkit-inner-spin-button
 
 
 @media(max-width: 1333px)
-    .card-item-wrp:nth-child(4n)
+    .offer-card-wrp:nth-child(4n)
         display: none
 
     .landlords-form
@@ -1289,7 +1423,7 @@ input::-webkit-inner-spin-button
     
 
 @media(max-width: 1024px)
-    .card-item-wrp:nth-child(3n)
+    .offer-card-wrp:nth-child(3n)
         display: none
 
     .offer-card
@@ -1374,7 +1508,7 @@ input::-webkit-inner-spin-button
         padding-bottom: 0
 
 @media(max-width: 767px)
-    .card-item-wrp:nth-child(2n)
+    .offer-card-wrp:nth-child(2n)
         display: none
 
     .main-search-block
@@ -1435,8 +1569,6 @@ input::-webkit-inner-spin-button
 
     .search-button-item
         display: block
-        // padding: 0.375rem 2rem
-        background-color: $color-blue 
 
     .filter   
         height: 250px
@@ -1553,11 +1685,12 @@ input::-webkit-inner-spin-button
     .menu-close-btn, .language-close-btn
         margin: 10px 10px 0 0 
 
-    .landlords-leftside, .landlords-rightside
-        width: 320px
-
     .landloards-header
         align-self: flex-start
+
+@media(max-width: 425px)
+    .landlords-leftside, .landlords-rightside
+        width: 350px
 
 
 @media(max-width: 340px)

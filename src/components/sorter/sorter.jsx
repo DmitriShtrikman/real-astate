@@ -20,7 +20,6 @@ const handleClickFilterButton = () => {
 const handleChangeValue = (e) => {
     setSortValue(e.target.value);
     dispatch(sorterValue(e.target.value));
-    console.log(e.target.value)
 };
 
 const page = {

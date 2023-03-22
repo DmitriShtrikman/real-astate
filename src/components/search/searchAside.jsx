@@ -1,14 +1,44 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
-import { currencySelect, pageSelect } from "../../store/actions/actions";
-import { getCurrencyValue, getPageValue } from "../../store/selectors/selector";
+import { currencySelect, pageSelect, searchCheckBox, searchClearInput, searchTyping } from "../../store/actions/actions";
+import { getCurrencyValue, getMainSearchValue, getPageValue, getRegionsDataBase, getSearchValue } from "../../store/selectors/selector";
 
 export const SearchAside = () => {
     const currency = useSelector(getCurrencyValue);
     const pageKey = useSelector(getPageValue);
     const dispatch = useDispatch();
     const [currencySymbol, setCurrencySymbol] = useState(currency)  
+    const searchValues = useSelector(getSearchValue);
+    const regions = useSelector(getRegionsDataBase);
+
+    const getCountryList = () => {
+        try {
+            let regionstArr = []
+            for (let i in regions) {
+                regionstArr.push(<option key={regions[i].id} value={regions[i].id}>{regions[i].id}</option>)
+            }
+            return regionstArr
+        } catch (error) {
+        console.error(error);
+        }
+    }
+
+    const getDistrict = () => {
+        try {
+        const district = regions.find(element=>element.id === searchValues.
+            inputCity)
+        let districtArr = []
+        for (let i in district) {
+            if (i!='id') {
+                districtArr.push(<option key={district[i]} value={district[i]}>{district[i]}</option>)
+            }
+        }
+        return districtArr
+        } catch (error) {
+            console.error(error);
+        }
+    }
     
     const handleCurrency = (e) => {
         const id = e.target.getAttribute('dataname');
@@ -25,6 +55,34 @@ export const SearchAside = () => {
     const handlePage = (e) => {
         const pageId = e.target.getAttribute('datapage');
         dispatch(pageSelect(pageId));
+        dispatch(searchClearInput());
+    };
+
+    const handleInputs = (event) => {
+        dispatch(searchTyping(event))
+    };
+    const handleCheckBox = (event) => {
+        dispatch(searchCheckBox(event));
+    };    
+
+    const clearInputs = (e) => {
+        e.preventDefault();
+        /* Clearing inputs */
+        const inputs = document.querySelectorAll('input');
+        const selects = document.querySelectorAll('select');
+        for (let i = 0;  i < inputs.length; i++) {
+        inputs[i].value = '';
+        inputs[i].checked = false;
+        };
+        for (let i = 0;  i < selects.length; i++) {
+            selects[i].value = 'main';
+            };
+        dispatch(searchClearInput())
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        document.querySelector('.aside-search').style.display = 'none';
     };
 
     useEffect(() => {
@@ -63,7 +121,7 @@ export const SearchAside = () => {
                                 <path d="M16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8ZM5.35355 4.64645C5.15829 4.45118 4.84171 4.45118 4.64645 4.64645C4.45118 4.84171 4.45118 5.15829 4.64645 5.35355L7.29289 8L4.64645 10.6464C4.45118 10.8417 4.45118 11.1583 4.64645 11.3536C4.84171 11.5488 5.15829 11.5488 5.35355 11.3536L8 8.70711L10.6464 11.3536C10.8417 11.5488 11.1583 11.5488 11.3536 11.3536C11.5488 11.1583 11.5488 10.8417 11.3536 10.6464L8.70711 8L11.3536 5.35355C11.5488 5.15829 11.5488 4.84171 11.3536 4.64645C11.1583 4.45118 10.8417 4.45118 10.6464 4.64645L8 7.29289L5.35355 4.64645Z" />
                             </svg>
                         </div>
-            <form id="search-form">
+            <form id="search-form" onSubmit={handleSubmit}>
                 <div className="form-check-wrp">
                     <NavLink onClick={handlePage} datapage='rent' to="/rent" className="header-menu-item-search">
                         Аренда
@@ -127,27 +185,39 @@ export const SearchAside = () => {
                     <div className="accordion-item">
                         <h2 className="accordion-header" id="panelsStayOpen-headingOne">
                         <button className="accordion-button accordion-button-user" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                            Адрес
+                        Поиск
                         </button>
                         </h2>
                         <div id="panelsStayOpen-collapseOne" data-bs-parent="#accordionExample" className="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-headingOne">
                             <div className="accordion-body">
-                                <select className="form-select form-select-dev" defaultValue='city' id="inputCountry" required>
-                                    <option disabled value="city">Город</option>
-                                    <option value="Istanbul">Стамбул</option>
-                                    <option value="Antalya">Анталья</option>
-                                    <option value="Alanya">Аланья</option>
-                                    <option value="Mersin">Мерсин</option>
+                                <div className="mb-3">
+                                    <input type="text" 
+                                    onChange={handleInputs} 
+                                    className="form-control" 
+                                    id="globalSearchInput"
+                                    placeholder="Название или описание"/>
+                                </div>
+                            </div>                            
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingTwelve">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwelve" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwelve">
+                            Расположение
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTwelve" data-bs-parent="#accordionExample"  className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTwelve">
+                         <div className="accordion-body">
+                                <select className="form-select form-select-dev" onChange={handleInputs} defaultValue='main' id="inputCity" required>
+                                    <option disabled value="main">Город</option>
+                                    {getCountryList()}
                                 </select>
                                 <div className="invalid-feedback">
                                 Please select a valid option.
                                 </div>
-                                <select className="form-select" defaultValue='district' id="inputCity" required>
-                                    <option disabled value="district">Район</option>
-                                    <option value="Kepez">Кепез</option>
-                                    <option value="Konyalty">Конъялты</option>
-                                    <option value="Lara">Лара</option>
-                                    <option value="Muratpasha">Муратпаша</option>
+                                <select className="form-select" onChange={handleInputs} defaultValue='main' id="inputDistrict" required>
+                                    <option disabled value="main">Район</option>
+                                {getDistrict()}
                                 </select>
                             </div>
                         </div>
@@ -175,11 +245,25 @@ export const SearchAside = () => {
                                 </div>
                                 <div className="row">
                                     <div className="col">
-                                        <input type="number" min="0" max="99999999" className="form-control" placeholder="Мин" aria-label="Min"/>
+                                        <input id="minPrice" 
+                                        onChange={handleInputs} 
+                                        type="number" 
+                                        min="0" 
+                                        max="50000000" 
+                                        className="form-control" 
+                                        placeholder="Мин" 
+                                        aria-label="Min"/>
                                         <span>{currencySymbol}</span>
                                     </div>
                                     <div className="col">
-                                        <input type="number" min="0" max="99999999" className="form-control" placeholder="Макс" aria-label="Max"/>
+                                        <input id="maxPrice"  
+                                        onChange={handleInputs} 
+                                        type="number" 
+                                        min="0" 
+                                        max="50000000" 
+                                        className="form-control" 
+                                        placeholder="Макс" 
+                                        aria-label="Max"/>
                                         <span>{currencySymbol}</span>
                                     </div>
                                 </div>
@@ -189,19 +273,337 @@ export const SearchAside = () => {
                     <div className="accordion-item">
                         <h2 className="accordion-header" id="panelsStayOpen-headingThree">
                         <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                            Поиск
+                            Общая площадь
                         </button>
                         </h2>
-                        <div id="panelsStayOpen-collapseThree" data-bs-parent="#accordionExample"  className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
+                        <div id="panelsStayOpen-collapseThree" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingThree">
                             <div className="accordion-body">
-                                <div className="mb-3">
-                                    <input type="text" className="form-control" id="formGroupExampleInput" placeholder="По всем параметрам"/>
+                                <div className="row">
+                                    <div className="col">
+                                        <input id="minSqure" 
+                                        onChange={handleInputs} 
+                                        type="number" 
+                                        min="0" 
+                                        max="100000" 
+                                        className="form-control" 
+                                        placeholder="Мин" 
+                                        aria-label="Min"/>
+                                        <span>m²</span>
+                                    </div>
+                                    <div className="col">
+                                        <input id="maxSqure"  
+                                        onChange={handleInputs} 
+                                        type="number" 
+                                        min="0" 
+                                        max="100000" 
+                                        className="form-control" 
+                                        placeholder="Макс" 
+                                        aria-label="Max"/>
+                                        <span>m²</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {/* <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingFour">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" aria-controls="panelsStayOpen-collapseFour">
+                        Количество комнат
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseFour" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFour">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="1+1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="1+1">1+1</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="2+1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="2+1">2+1</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="3+1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="3+1">3+1</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="4+1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="4+1">4+1</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="5+1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="5+1">5+1</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingFive">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false" aria-controls="panelsStayOpen-collapseFive">
+                        Отопление
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseFive" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingFive">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="heatingNo" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        value="Not" 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="heatingNo">Нет</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="heatingGas" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        value="Gas"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="heatingGas">Газ</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="heatingElectro" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        value="Electro"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="heatingElectro">Электричество</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingSix">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false" aria-controls="panelsStayOpen-collapseSix">
+                        Кондционер
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseSix" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingSix">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="airYes" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        // value={true}
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="airYes">Есть</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="airNo" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        // value={false}
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="airNo">Нет</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingSeven">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseSeven" aria-expanded="false" aria-controls="panelsStayOpen-collapseSeven">
+                        Ванных комнат
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseSeven" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingSeven">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="bath0" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="bath0">Нет</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="bath1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="bath1">1</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="bath2" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="bath2">2</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="bath3" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="bath3">3</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="bath4" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="bath4">4</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingEight">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseEight" aria-expanded="false" aria-controls="panelsStayOpen-collapseEight">
+                        Балкон
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseEight" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingEight">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="balkony0" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="balkony0">Нет</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="balkony1" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="balkony1">1</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="balkony2" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="balkony2">2</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="balkony3" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="balkony3">3</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="balkony4" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="balkony4">4</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="balkony5" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="balkony5">5</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingNine">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseNine" aria-expanded="false" aria-controls="panelsStayOpen-collapseNine">
+                        Мебель
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseNine" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingNine">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="furnitureYes" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="furnitureYes">Есть</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="furnitureNo" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="furnitureNo">Нет</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion-item">
+                        <h2 className="accordion-header" id="panelsStayOpen-headingTen">
+                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTen" aria-expanded="false" aria-controls="panelsStayOpen-collapseTen">
+                        Кухонная мебель
+                        </button>
+                        </h2>
+                        <div id="panelsStayOpen-collapseTen" data-bs-parent="#accordionExample" className="accordion-collapse collapse" aria-labelledby="panelsStayOpen-headingTen">
+                            <div className="accordion-body">
+                                <div className="row accordion-checkbox-input">
+                                    <div className="col form-check checkbox-input">
+                                        <input id="kitchenYes" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="kitchenYes">Есть</label>
+                                    </div>
+                                    <div className="col form-check checkbox-input">
+                                        <input id="kitchenNo" 
+                                        defaultChecked={false}
+                                        onChange={handleCheckBox} 
+                                        type="checkbox"
+                                        className="form-check-input"/>
+                                        <label className="form-label" htmlFor="kitchenNo">Нет</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                     */}
                     <div className="search-button">
-                    <button type="submit" form="search-form" className="btn btn-primary search-button-item">Искать</button>
+                    <button type="submit" form="search-form" className="btn btn-primary search-button-item">Поиск</button>
+                    <button type="button" onClick={clearInputs} form="search-form" className="btn btn-primary clear-button-item">Очистить поиск</button>
                     </div>   
                 </div>
             </form>    

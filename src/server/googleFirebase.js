@@ -1,6 +1,10 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getDatabase, ref, set, get, child } from "firebase/database";
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+
+/*-- Firebase connection --*/
 
 const firebaseConfig = {
     apiKey: "AIzaSyAClSHATIAMG2wLVdhn8VkrWQGt-cr-nEo",
@@ -10,25 +14,50 @@ const firebaseConfig = {
     storageBucket: "antalya-realty.appspot.com",
     messagingSenderId: "827813591412",
     appId: "1:827813591412:web:802cdfc4926f6e5e005421",
-    measurementId: "G-PGJ27FCMNM"
+    measurementId: "G-PGJ27FCMNM",
+    // storageBucket: 'gs://antalya-realty.appspot.com/'
 };
 
 const app = initializeApp(firebaseConfig);
+export const storage = getStorage(app);
 const analytics = getAnalytics(app);
+const auth = getAuth(app);
 
 export const database = getDatabase(app);
-export const dataRef = ref(database);
+export const dataDeployRef = ref(database, 'deployDb');
+export const dataRef = ref(database, 'fulldb');
+export const regionDataRef = ref(database, 'regions');
+export const userRef = ref(database, 'users');
 
-// const dbRef = ref(getDatabase());
+console.log(analytics);
 
-// export const objectData = get(dbRef).then((snapshot) => {
-//     if (snapshot.exists()) {
-//         // console.log(snapshot.val());
-//     } else {
-//         console.log("No data available");
-//     }
-// }).catch((error) => {
-//         console.error(error);
-// });
+export const getPostById = (userId) => ref(database, `users/${userId}`)
 
+export const signUp = async (email, password) => {
+    await createUserWithEmailAndPassword(auth, email, password)
+};
+  
+export const signIn = async (email, password) => {
+    await signInWithEmailAndPassword(auth, email, password)
+};
 
+export const logOut = async () => await signOut(auth)
+
+export const onAuth = async () => {
+    await onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const uid = user.uid;
+            console.log('Loged in')
+          } else {            
+            console.log('Loged out')
+          }
+    })
+};
+
+export const checkuser = () => {
+    if (auth.currentUser) {
+        return true
+    } else {
+        return false
+    }
+};
