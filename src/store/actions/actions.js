@@ -1,4 +1,4 @@
-import { AGREEMENTVALUE, CHECK, CLEAR_INPUTS, CURRENCYOBJECT, CURRENCYSELECT, DATABASE, LANGUAGESELECT, MAINSELECT, MAIN_RESET_INPUTS, OBJECT, PAGEPARAM, PAGESELECT, REGIONSDATABASE, SEARCHCHECK, SEARCHSELECT, SEARCHTYPING, SEARCH_CLEAR_INPUTS, SELECT, SORTERVALUE, TYPING } from "../types/types";
+import { AGREEMENTVALUE, CHECK, CLEAR_INPUTS, CURRENCYOBJECT, CURRENCYSELECT, DATABASE, EDITOBJECT, EDITOBJECTCHECKBOX, EDITOBJECTSELECT, LANGUAGESELECT, MAINSELECT, MAIN_RESET_INPUTS, OBJECT, PAGEPARAM, PAGESELECT, REGIONSDATABASE, REGIONSUPDATE, SEARCHCHECK, SEARCHSELECT, SEARCHTYPING, SEARCH_CLEAR_INPUTS, SECRETTYPING, SELECT, SORTERVALUE, TYPING, USERSDATABASE } from "../types/types";
 
 export const currencySelect = (data) => {
   return { type: CURRENCYSELECT, payload: data }
@@ -24,12 +24,38 @@ export const objectsDataBase = (data) => {
   return { type: DATABASE, payload: data }
 };
 
+export const usersDataBase = (data) => {
+  return { type: USERSDATABASE, payload: data }
+};
+
 export const regionsDataBase = (data) => {
   return { type: REGIONSDATABASE, payload: data }
 };
 
+export const regionsUpdate = (data) => {
+  return { type: REGIONSUPDATE, payload: data }
+};
+
 export const chosenObject = (data) => {
   return { type: OBJECT, payload: data }
+};
+
+export const chosenObjectEdit = (event) => {
+  return { 
+    type: EDITOBJECT, 
+    payload: {[event.target.id]: event.target.value }}
+};
+
+export const chosenObjectEditCheckbox = (event) => {
+  return { 
+    type: EDITOBJECTCHECKBOX, 
+    payload: {[event.target.id]: event.target.checked }}
+};
+
+export const chosenObjectEditSelect = (event) => {
+  return { 
+    type: EDITOBJECTSELECT, 
+    payload: {[event.target.id]: event.target.checked }}
 };
 
 export const sorterValue = (data) => {
@@ -47,6 +73,13 @@ export const typing = (event) => {
   }
 }
 
+export const typingSecret = (event) => {
+  return {
+    type: SECRETTYPING,
+    payload: {[event.target.id]: event.target.value}
+  }
+}
+
 export const checkBox = (event) => {
   return {
     type: CHECK,
@@ -57,7 +90,7 @@ export const checkBox = (event) => {
 export const selectBool = (event) => {
   return {
     type: SELECT,
-    payload: {[event.target.id]: Boolean(event.target.value)}
+    payload: {[event.target.id]: Boolean(Number(event.target.value))}
   }
 }
 

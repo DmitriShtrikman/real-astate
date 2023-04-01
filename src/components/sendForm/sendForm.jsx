@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { checkBox, clearInput, select, selectBool, typing, userAgreement } from "../../store/actions/actions";
+import { checkBox, clearInput, select, selectBool, typing, typingSecret, userAgreement } from "../../store/actions/actions";
 import { getAgreementrValue, getFullDataBase, getInputsValue, getRegionsDataBase } from "../../store/selectors/selector";
 import { push } from "firebase/database";
-import { dataRef, dataUsersRef, logOut, storage } from "../../server/googleFirebase";
+import { dataUsersRef, logOut, storage } from "../../server/googleFirebase";
 import { v4 as uuidv4 } from 'uuid';
 import { uploadBytes , ref, getDownloadURL } from "firebase/storage";
 import { getAuth } from "firebase/auth";
@@ -38,17 +38,12 @@ export const SendForm = () => {
         try {
         const district = regions.find(element=>element.id === filledForm.
             city)
-            console.log(regions);
-            console.log(district);
-            console.log("City", filledForm.
-            city)
         let districtArr = []
         for (let i in district) {
             if (i!='id') {
                 districtArr.push(<option key={district[i]} value={district[i]}>{district[i]}</option>)
             }
         }
-        console.log(districtArr);
         return districtArr
         } catch (error) {
             console.error(error);
@@ -66,13 +61,13 @@ export const SendForm = () => {
         setPageLoading(true);
         console.log("Well done! Form submited.")
 
-        // Create new id
+        // Create new number
         let newIdArray = [];
         for(let i=0; i<fullDataBase.length; i++) {
-            newIdArray.push(fullDataBase[i].id)
+            newIdArray.push(fullDataBase[i].number)
         }
-        const id = (Math.max(...newIdArray) + 3);
-        console.log(id)
+        const number = String(Math.max(...newIdArray) + 3);
+        // console.log(id)
 
         // Create current date
         function getCurrentDate() {
@@ -98,16 +93,13 @@ export const SendForm = () => {
         );        
         
         function createObject() { 
-            push(dataRef, 
+            push(dataUsersRef, 
                 {
-                //     userId: 
-                //    {
                     "date": getCurrentDate(), 
                     "img": imgURLs, 
-                    "id": id, 
+                    "number": number, 
                     "uuid": uuidv4(),
                     ...filledForm
-                    // }
                 }   
             );            
             setPageLoading(false);
@@ -120,6 +112,11 @@ export const SendForm = () => {
 
     const handleInputs = (event) => {
         dispatch(typing(event))
+    };
+
+    const handleSecretInputs = (event) => {
+
+        dispatch(typingSecret(event))
     };
 
     const handleCheck = (event) => {
@@ -220,15 +217,15 @@ export const SendForm = () => {
                     <div className="landlords-leftside">
                         <div className="col-10">
                             <label htmlFor="ownerName" className="form-label">Имя Фамилия</label>
-                            <input onChange={handleInputs} type="text" className="form-control" id="ownerName" placeholder="Имя Фамилия" value={filledForm.ownerName} required/>
+                            <input onChange={handleSecretInputs} type="text" className="form-control" id="ownerName" placeholder="Имя Фамилия" value={filledForm.ownerName} required/>
                         </div>
                         <div className="col-10">
                             <label htmlFor="email" className="form-label">@ e-mail</label>
-                            <input onChange={handleInputs} type="email" className="form-control" id="email" placeholder="mail@mail.com" value={filledForm.email} required/>
+                            <input onChange={handleSecretInputs} type="email" className="form-control" id="email" placeholder="mail@mail.com" value={filledForm.email} required/>
                         </div>
                         <div className="col-10">
                                 <label htmlFor="tel" className="form-label">Номер телефона</label>                       
-                                <input onChange={handleInputs} type="tel" className="form-control" id="phoneNumber" placeholder="tel. +90(535)123-45-67" value={filledForm.phoneNumber} required/>
+                                <input onChange={handleSecretInputs} type="tel" className="form-control" id="phoneNumber" placeholder="tel. +90(535)123-45-67" value={filledForm.phoneNumber} required/>
                         </div>
                         <div className="col-10">                            
                             <label htmlFor="target" className="form-label">Выберите раздел</label>
@@ -278,7 +275,7 @@ export const SendForm = () => {
                             </div>
                         </div>
                         <div className="col-10">
-                            <textarea onChange={handleInputs} className="landlords-textarea" name="address" id="address" placeholder="Адрес" maxLength="90" value={filledForm.address} required></textarea>
+                            <textarea onChange={handleSecretInputs} className="landlords-textarea" name="address" id="address" placeholder="Адрес" maxLength="90" value={filledForm.address} required></textarea>
                         </div>
                         <div className="col-10">
                             <textarea onChange={handleInputs} className="landlords-textarea-description" name="description" id="description" placeholder="Описание" maxLength="500" value={filledForm.description} required></textarea>
@@ -352,10 +349,10 @@ export const SendForm = () => {
                         </div>
                         <div className="col-10">
                             <label htmlFor="airConditioning" className="form-label">Кондиционер</label>
-                            <select onChange={handleBooleanSelect} defaultValue='' className="form-select" id="airConditioning" value={filledForm.airConditioning} >
+                            <select onChange={handleBooleanSelect} defaultValue='' className="form-select" id="airConditioning"  >
                                 <option disabled ></option>
-                                <option value={true}>Кондиционер / Есть</option>
-                                <option value=''>Кондиционер / Нет</option>           
+                                <option value={1}>Кондиционер / Есть</option>
+                                <option value={0}>Кондиционер / Нет</option>           
                             </select>
                         </div> 
                         <div className="col-10">
@@ -367,7 +364,7 @@ export const SendForm = () => {
                                 <option value="2">Ванных комнат / 2</option>
                                 <option value="3">Ванных комнат / 3</option> 
                                 <option value="4">Ванных комнат / 4</option>
-                                <option value="4">Ванных комнат / 5</option>
+                                <option value="5">Ванных комнат / 5</option>
                             </select>
                         </div>
                         <div className="col-10">
@@ -384,18 +381,18 @@ export const SendForm = () => {
                         </div>  
                         <div className="col-10">
                             <label htmlFor="furniture" className="form-label">Мебель</label>
-                            <select onChange={handleBooleanSelect} defaultValue='' className="form-select" id="furniture" value={filledForm.furniture} >
+                            <select onChange={handleBooleanSelect} defaultValue='' className="form-select" id="furniture" >
                                 <option disabled ></option>
-                                <option value={true}>Мебель / Есть</option>
-                                <option value=''>Мебель / Нет</option>           
+                                <option value={1}>Мебель / Есть</option>
+                                <option value={0}>Мебель / Нет</option>           
                             </select>
                         </div>
                         <div className="col-10">
                             <label htmlFor="kitchen" className="form-label">Кухонная мебель</label>
-                            <select onChange={handleBooleanSelect} defaultValue='' className="form-select" id="kitchen" value={filledForm.kitchen} >
+                            <select onChange={handleBooleanSelect} defaultValue='' className="form-select" id="kitchen" >
                                 <option disabled ></option>
-                                <option value={true}>Кухонная мебель / Есть</option>
-                                <option value=''>Кухонная мебель / Нет</option>           
+                                <option value={1}>Кухонная мебель / Есть</option>
+                                <option value={0}>Кухонная мебель / Нет</option>           
                             </select>
                         </div>                        
                         <div className="col-10">

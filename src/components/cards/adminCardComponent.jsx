@@ -1,34 +1,47 @@
-import { onValue } from "firebase/database";
+import { getDatabase, onValue, push, ref, remove } from "firebase/database";
 import { memo, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { dataRef } from "../../server/googleFirebase";
-import { getCurrencyValue } from "../../store/selectors/selector";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import { dataRef, dataUsersRef } from "../../server/googleFirebase";
+import { getChosenObject, getCurrencyValue } from "../../store/selectors/selector";
 import { getPageValue } from "../../store/selectors/selector";
 import useCurrencyCoefficient from "../currency/curencyCoefficient";
+import { chosenObject, chosenObjectEdit, chosenObjectEditCheckbox } from "../../store/actions/actions";
+import PopUpConfirm from "../admin/popUpConfirm";
 
-export const CardComponent = () => {
+export const AdminCardComponent = (props) => {
     const { id } = useParams();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [fullDataBase, setFullDataBase] = useState([]);
-    
-    const pageKey = useSelector(getPageValue);
+    const [confirmation, setConfirmation] = useState(false)
+    // const newObject = useSelector(getChosenObject);
+    const db = getDatabase();   
     const currency = useSelector(getCurrencyValue);
     const valuteCoefficient = useCurrencyCoefficient();
-    const noAction = (e) => {
-        e.preventDefault();
-    };
+
     const [mainPhotoKey, setMainPhotoKey] = useState('0');
 
     const handleChangePhoto = (e, imgNumber) => {
         setMainPhotoKey(imgNumber)
     };
-    
-    const page = {
-        rent: 'Аренда',
-        sale: 'Продажа',
-        new: 'Новостройки',
+
+    const handleChangeInput = (event) => {
+        dispatch(chosenObjectEdit(event));
     };
+    const handleChangeInputCheckbox = (event) => {
+        dispatch(chosenObjectEditCheckbox(event));
+    }; 
+    const handleSave = (e) => {
+        e.preventDefault();
+        setConfirmation(true)
+        // const newObjectId = newObject.id;     
+        // delete newObject.id;
+        // push(ref(db, props.dbname), newObject); 
+        // remove(ref(db, props.dbname + '/'+ newObjectId)); 
+    }
+    
+    
     const pageType = {
         flat:'Квартира',
         house:'Дом',
@@ -38,7 +51,7 @@ export const CardComponent = () => {
     }        
 
     useEffect(() => {
-        onValue(dataRef, (snapshot) => {
+        onValue(ref(db, props.dbname), (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 const newData = Object.entries(data).map((item) => ({
@@ -46,38 +59,23 @@ export const CardComponent = () => {
                     ...item[1]
                   }))    
                 setFullDataBase(newData);
+                const newObj = newData.filter(item => item.number == id)[0];
+                if(!newObj) {
+                    return null;   
+                }
+                dispatch(chosenObject(newObj));
             }
           });
     }, []);
 
-    // useEffect (() => {
-    //     document.querySelector('.card-photo-small-screen-active').classList.add('active');
-    // })
-
     return (
         <>
+        {confirmation && <PopUpConfirm props={props.dbname}/>}  
         {fullDataBase.filter(item => item.number == id).map((item) => 
             <div key={item + Math.random() * 10000}>
             <div className="card-title-wrp">
-                <nav className="filter-nav" aria-label="breadcrumb">
-                    <ol className="breadcrumb">
-                        <li className="breadcrumb-item">
-                            <Link to={'/'}>
-                                <svg width="18" height="18" viewBox="0 0 24 24"  xmlns="http://www.w3.org/2000/svg">
-                                <path d="M11.4785 2.99047C11.7987 2.79484 12.2013 2.79484 12.5215 2.99047L19.5215 7.26825C19.8187 7.4499 20 7.77316 20 8.12153V18.9999C20 19.5521 19.5523 19.9999 19 19.9999H16V13.9999C16 12.343 14.6569 10.9999 13 10.9999H11C9.34315 10.9999 8 12.343 8 13.9999V19.9999H5C4.44772 19.9999 4 19.5521 4 18.9999V8.12153C4 7.77316 4.1813 7.4499 4.47855 7.26825L11.4785 2.99047ZM10 19.9999V13.9999C10 13.4476 10.4477 12.9999 11 12.9999H13C13.5523 12.9999 14 13.4476 14 13.9999V19.9999H10ZM15 21.9999H19C20.6569 21.9999 22 20.6567 22 18.9999V8.12153C22 7.07643 21.4561 6.10665 20.5644 5.56168L13.5644 1.2839C12.604 0.697032 11.396 0.697032 10.4356 1.2839L3.43565 5.56168C2.54389 6.10665 2 7.07643 2 8.12153V18.9999C2 20.6567 3.34315 21.9999 5 21.9999H9H15Z" />
-                                </svg>
-                            </Link>
-                        </li>
-                        <li className="breadcrumb-item" aria-current="page">
-                            <Link to={`/${pageKey}`}>{page[pageKey]}</Link>
-                        </li>
-                        <li className="breadcrumb-item active" aria-current="page">
-                            <Link to={`/${pageKey}/${item.realAstateType}`}>{pageType[item.realAstateType]}</Link>
-                            </li>
-                    </ol>
-                </nav>
-                <h2 className="card-name">{item.objectName}</h2>
-                <p className="card-id">№ объекта: {item.number}</p>            
+                <input onChange={handleChangeInput} id="objectName" type="text" className="form-control admin-card-input-header" defaultValue={item.objectName}/>
+                <p className="admin-card-id">№ объекта: {item.number}</p>            
             </div>
             <div className="card-main-info">
                 <div className="card-photo">
@@ -131,7 +129,7 @@ export const CardComponent = () => {
                             </button>                      
                         </div>               
                     </div>
-                    <div className="card-item-description-p">{item.description}</div>
+                    <textarea onChange={handleChangeInput} className="landlords-textarea-description admin-textarea" name="address" id="description" placeholder="Описание" maxLength="500" defaultValue={item.description}></textarea>
                 </div>
                 <div className="card-photo-small-screen">
                     <div id="carouselExampleFade" className="carousel slide carousel-fade">
@@ -159,8 +157,11 @@ export const CardComponent = () => {
                     <p className="card-region">Всего {item.img.length} фото</p>
                     <div className="card-item-description-p">{item.description}</div>
                 </div>
-                <div className="card-characters">                
-                    <h3 className="card-price">{Math.round(item.price * valuteCoefficient).toLocaleString()}<span>{currency}</span></h3>
+                <div className="card-characters">      
+                    <div className="admin-card-input-price-wrp">
+                        <input id="price" onChange={handleChangeInput} type="number" className="form-control admin-card-input-price" defaultValue={Math.round(item.price * valuteCoefficient)}/>
+                        <p>{currency}</p>
+                    </div>
                     <div className="card-region-wrp">
                         <p className="card-region">{item.city} / {item.district}</p>
                         <p className="card-region">{item.date}</p>
@@ -168,38 +169,89 @@ export const CardComponent = () => {
                     <div className="card-properties-wrp">
                         <ul className="card-properties-ul">
                             <li>
+                                <p className="card-properties-item">Предложение</p>
+                                <p className="card-properties-item-value">{item.target}</p>
+                            </li>
+                            <div className="card-divide"></div>
+                            <li>
                                 <p className="card-properties-item">Вид недвижимости</p>
                                 <p className="card-properties-item-value">{pageType[item.realAstateType]}</p>
                             </li>
                             <div className="card-divide"></div>
+                             <li>
+                                <p className="card-properties-item">Имя собственника</p>
+                                <input id="ownerName" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.contacts.ownerName}/>
+                            </li>
+                            <div className="card-divide"></div>
+                            <li>
+                                <p className="card-properties-item">Телефон</p>
+                                <input id="phoneNumber" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.contacts.phoneNumber}/>
+                            </li>
+                            <div className="card-divide"></div>
+                            <li>
+                                <p className="card-properties-item">E-mail</p>
+                                <input id="email" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.contacts.email}/>
+                            </li>
+                            <div className="card-divide"></div>
+                            <li>
+                                <p className="card-properties-item">Адрес</p>
+                                <input id="address" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.contacts.address}/>
+                            </li>
+                            <div className="card-divide"></div>
                             <li>
                                 <p className="card-properties-item">Общая площадь, m²</p>
-                                <p className="card-properties-item-value">{item.m2gross}</p>
+                                <input id="m2gross" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.m2gross}/>
                             </li>
                             <div className="card-divide"></div>
                             <li>
                                 <p className="card-properties-item">Жилая площадь, m²</p>
-                                <p className="card-properties-item-value">{item.m2net}</p>
+                                <input id="m2net" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.m2net}/>
                             </li>
                             <div className="card-divide"></div>
                             <li>
                                 <p className="card-properties-item">Количество комнат</p>
-                                <p className="card-properties-item-value">{item.rooms}</p>
+                                <select onChange={handleChangeInput} className="form-select admin-card-input-select" id="rooms" defaultValue={item.rooms}>
+                                    <option value="">No data</option>
+                                    <option value="0+1">Комнаты 0+1</option>
+                                    <option value="1+0">Комнаты 1+0</option> 
+                                    <option value="1+1">Комнаты 1+1</option>
+                                    <option value="1+1">Комнаты 1+2</option>
+                                    <option value="2+0">Комнаты 2+0</option>
+                                    <option value="2+1">Комнаты 2+1</option>
+                                    <option value="2+2">Комнаты 2+2</option>
+                                    <option value="3+0">Комнаты 3+0</option>
+                                    <option value="3+1">Комнаты 3+1</option>
+                                    <option value="3+2">Комнаты 3+2</option>
+                                    <option value="4+0">Комнаты 4+0</option>
+                                    <option value="4+1">Комнаты 4+1</option>
+                                    <option value="4+2">Комнаты 4+2</option>
+                                    <option value="5+0">Комнаты 5+0</option>
+                                    <option value="5+1">Комнаты 5+1</option>
+                                    <option value="5+2">Комнаты 5+2</option>
+                                    <option value="6+0">Комнаты 6+0</option>
+                                    <option value="6+1">Комнаты 6+1</option>
+                                    <option value="6+2">Комнаты 6+2</option>
+                                    <option value="7+0">Комнаты 7+0</option>
+                                    <option value="7+1">Комнаты 7+1</option>
+                                    <option value="7+2">Комнаты 7+2</option>
+                                </select>
                             </li>
                             <div className="card-divide"></div>
                             <li>
                                 <p className="card-properties-item">Этаж</p>
-                                <p className="card-properties-item-value">{item.floor}</p>
+                                <input id="floor" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.floor}/>
                             </li>
                             <div className="card-divide"></div>
                             <li>
                                 <p className="card-properties-item">Всего этажей</p>
-                                <p className="card-properties-item-value">{item.totalFloor}</p>
+                                <input id="totalFloor" onChange={handleChangeInput} type="text" className="form-control admin-card-input-item" defaultValue={item.totalFloor}/>
                             </li>
                             <div className="card-divide"></div>
                             <li>
                                 <p className="card-properties-item">Отопление</p>
-                                <p className="card-properties-item-value">{item.heating}</p>
+                                <p className="card-properties-item-value">
+                                {item.heating}
+                                </p>                                
                             </li>
                             <div className="card-divide"></div>
                             <li>
@@ -236,35 +288,36 @@ export const CardComponent = () => {
                             <li>
                                 <p className="card-properties-mini-item">Кухонная плита</p>
                                 <p className="card-properties-mini-item-value">
-                                <input className="form-check-input" type="checkbox" value='' id="stove" onClick={noAction} defaultChecked={item.stove} />
+                                <input onChange={handleChangeInputCheckbox} className="form-check-input" type="checkbox" id="stove" defaultChecked={item.stove} />
                                 </p>
                             </li>
                             <li>
                                 <p className="card-properties-mini-item">Посудомоечная машина</p>
                                 <p className="card-properties-mini-item-value">
-                                <input className="form-check-input" type="checkbox" value='' id="dishwasher" onClick={noAction} defaultChecked={item.dishwasher} />
+                                <input onChange={handleChangeInputCheckbox}  className="form-check-input" type="checkbox" id="dishwasher" defaultChecked={item.dishwasher} />
                                 </p>
                             </li>
                             <li>
                                 <p className="card-properties-mini-item">Стиральная машина</p>
                                 <p className="card-properties-mini-item-value">
-                                <input className="form-check-input" type="checkbox" value='' id="washingMachine" onClick={noAction} defaultChecked={item.washingMachine} />
+                                <input onChange={handleChangeInputCheckbox}  className="form-check-input" type="checkbox" id="washingMachine" defaultChecked={item.washingMachine} />
                                 </p>
                             </li>
                             <li>
                                 <p className="card-properties-mini-item">Холодильник</p>
                                 <p className="card-properties-mini-item-value">
-                                <input className="form-check-input" type="checkbox" value='' id="refrigerator" onClick={noAction} defaultChecked={item.refrigerator} />
+                                <input onChange={handleChangeInputCheckbox}  className="form-check-input" type="checkbox" id="refrigerator" defaultChecked={item.refrigerator} />
                                 </p>
                             </li>
                             <li>
                                 <p className="card-properties-mini-item">Микроволновая печь</p>
                                 <p className="card-properties-mini-item-value">
-                                <input className="form-check-input" type="checkbox" value='' id="microwave" onClick={noAction} defaultChecked={item.microwave} />
+                                <input onChange={handleChangeInputCheckbox}  className="form-check-input" type="checkbox" id="microwave" defaultChecked={item.microwave} />
                                 </p>
                             </li>   
                         </ul>                        
-                        <button onClick={() => navigate(-1)} className="btn btn-primary landlord-button">Вернуться назад</button>                     
+                        <button onClick={() => navigate(-1)} className="btn btn-primary landlord-button">Вернуться назад</button>   
+                        <button onClick={handleSave} className="btn btn-danger landlord-button admin-landlord-btn">Сохранить</button>                    
                     </div>
                 </div>
             </div>
@@ -274,4 +327,4 @@ export const CardComponent = () => {
     )
 }
 
-export default memo(CardComponent);
+export default memo(AdminCardComponent);

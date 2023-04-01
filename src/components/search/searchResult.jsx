@@ -24,7 +24,7 @@ export const SearchResult = () => {
             if(!param) {
                 return (item.target === target
                     && (item.objectName.match(regexp)
-                    || item.description.match(regexp))
+                    || item.description.match(regexp)|| item.number.match(regexp))
                     && item.city.match(searchResponse.inputCity)
                     && item.district.match(searchResponse.inputDistrict)
                     && item.price*currencyCoefficient >= Number(searchResponse.minPrice)
@@ -60,7 +60,7 @@ export const SearchResult = () => {
             return (item.target === target
                 && item.realAstateType === param
                 && (item.objectName.match(regexp)
-                || item.description.match(regexp))
+                || item.description.match(regexp)|| item.number.match(regexp))
                 && item.city.match(searchResponse.inputCity)
                 && item.district.match(searchResponse.inputDistrict)
                 && item.price*currencyCoefficient >= Number(searchResponse.minPrice)
@@ -84,10 +84,10 @@ export const SearchResult = () => {
     switch(storeSorterValue) {
         case "chipiest":
             cardsListFilter.sort((a, b) => {
-                if (a.price > b.price) {
+                if (Number(a.price) > Number(b.price)) {
                     return 1;
                     }
-                    if (a.price < b.price) {
+                    if (Number(a.price) < Number(b.price)) {
                     return -1;
                     }
                     return 0;
@@ -95,10 +95,10 @@ export const SearchResult = () => {
             break;                
         case "expensive": 
             cardsListFilter.sort((a, b) => {
-                if (a.price > b.price) {
+                if (Number(a.price) > Number(b.price)) {
                     return -1;
                 }
-                if (a.price < b.price) {
+                if (Number(a.price) < Number(b.price)) {
                     return 1;
                 }
                 return 0;
@@ -165,7 +165,7 @@ export const SearchResult = () => {
                 <div className="search-result">                
                     {cardsListFilter.map((item) => {
                         return(
-                            <CardItem key={item.id} id={item.id} objectName={item.objectName} price={item.price} description={item.description} rooms={item.rooms} m2gross={item.m2gross} city={item.city} date={item.date} img={item.img}/>
+                            <CardItem key={item.number} number={item.number} objectName={item.objectName} price={item.price} description={item.description} rooms={item.rooms} m2gross={item.m2gross} city={item.city} date={item.date} img={item.img}/>
                         )                    
                     })}
                 </div>            

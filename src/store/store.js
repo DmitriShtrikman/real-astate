@@ -14,6 +14,7 @@ const persistConfig = {
     blacklist: [
       'pageParam', 
       'fullDataBase',
+      'usersDataBase',
       'sorterValue',
       'agreementValue',
       'formInput',

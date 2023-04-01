@@ -16,11 +16,11 @@ export const SearchAside = () => {
         try {
             let regionstArr = []
             for (let i in regions) {
-                regionstArr.push(<option key={regions[i].id} value={regions[i].id}>{regions[i].id}</option>)
+                regionstArr.push(<option key={regions[i].id} value={regions[i].id}>{regions[i].city}</option>)
             }
             return regionstArr
         } catch (error) {
-        console.error(error);
+        // console.error(error);
         }
     }
 
@@ -30,13 +30,13 @@ export const SearchAside = () => {
             inputCity)
         let districtArr = []
         for (let i in district) {
-            if (i!='id') {
+            if (i!='city' && i!='id') {
                 districtArr.push(<option key={district[i]} value={district[i]}>{district[i]}</option>)
             }
         }
         return districtArr
         } catch (error) {
-            console.error(error);
+            // console.error(error);
         }
     }
     
@@ -49,9 +49,11 @@ export const SearchAside = () => {
         };
         e.target.parentNode.classList.add('selected')   
     };
+
     const handleSearchCloseButton = () => {
         document.querySelector('.aside-search').style.display = 'none';
     };
+    
     const handlePage = (e) => {
         const pageId = e.target.getAttribute('datapage');
         dispatch(pageSelect(pageId));

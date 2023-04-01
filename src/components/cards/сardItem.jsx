@@ -5,14 +5,20 @@ import { chosenObject } from "../../store/actions/actions";
 import { getCurrencyValue, getFullDataBase } from "../../store/selectors/selector";
 import useCurrencyCoefficient from "../currency/curencyCoefficient";
 
+
 export const CardItem = (props) => {
     const currency = useSelector(getCurrencyValue);
     const valuteCoefficient = useCurrencyCoefficient();
     const dispatch = useDispatch();
-    const idCarousel = Math.floor(Math.random() * 100000);
+    
     const fullDataBase = useSelector(getFullDataBase);
+
+    const letters = "abcdefghijklmnopqrsuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const randomIndex = Math.floor(Math.random() * letters.length);
+    const idCarousel = letters[randomIndex];
+
     const getThisObject = fullDataBase.filter((item) => {
-        return item.id === props.id
+        return item.number === props.number
     });
     const dispatchChoosenObject = () => {
         dispatch(chosenObject(getThisObject)); 
@@ -27,14 +33,14 @@ export const CardItem = (props) => {
 
     return (
         <>
-        <Link to={`/card/${props.id}`} onClick={dispatchChoosenObject} className="card-item-wrp">
+        <Link to={`/card/${props.number}`} onClick={dispatchChoosenObject} className="card-item-wrp">
             <div className="card-item">                
                 <div className="card-item-img-wrp">
                     <div id={idCarousel} className="carousel slide">
                         <div className="carousel-inner">
                             {props.img.map((item) => {                            
                                 return(
-                                <div key={item + Math.random() * 10000} className="carousel-item card-item-img-wrp">
+                                <div key={item} className="carousel-item card-item-img-wrp">
                                     <img src={item} className="d-block w-100 card-item-img" alt={item}/>
                                 </div>                            
                                 )                                               

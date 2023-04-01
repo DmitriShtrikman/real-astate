@@ -5,6 +5,7 @@ export const initState = {
     page: "rent",
     pageParam: "",
     fullDataBase: "",
+    usersDataBase: "",
     regions: "",
     chosenObject: "",
     sorterValue: "sort",

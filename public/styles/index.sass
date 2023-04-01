@@ -1054,7 +1054,7 @@ input::-webkit-inner-spin-button
 
 .landlords-main
     margin: 0 auto
-    width: 70%
+    width: 100%
     display: flex
     flex-direction: column
     align-items: center
@@ -1387,6 +1387,288 @@ input::-webkit-inner-spin-button
     border-color: $color-red 
 
 
+/* -- ADMIN -- */
+
+
+.admin-header
+    font-family: $font-main
+    color: $color-dark-blue
+    font-size: 28px
+    font-weight: 700
+    padding: 10px
+    margin: 5px 0 0 0 
+
+.nav-link
+    font-family: $font-main
+    color: $color-dark-blue
+    font-size: 16px
+    font-weight: 400
+
+.admin-nav-wrp
+    margin: 5px 5px 10px 5px
+    display: flex
+    flex-direction: column
+
+.nav-pills
+    margin: 0 0 10px 0
+
+.exit-admin-btn
+    padding: 0.3em
+    width: 10%
+    margin-bottom: 25px
+    background-color: $color-red 
+    position: absolute
+    right: 30px
+    top: 114px
+
+.admin-panel-wrp
+    background-color: $color-white
+    width: 98%
+    min-height: 400px
+    border-radius: 5px
+    margin: 0 0 13px 0
+    display: flex
+    justify-content: center
+
+.admin-panel-item
+    width: 400px
+    display: flex
+    justify-content: space-between
+    padding: 15px
+    
+
+.admin-city-btn-wrp
+    display: flex
+    flex-direction: column
+    gap: 10px
+    min-width: 250px
+
+.admin-city-btn
+    min-width: 145px
+    text-color: $color-white
+    background-color: $color-blue
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s    
+
+.admin-city-btn:hover
+    background-color: $color-dark-blue
+    cursor: pointer
+    color: $color-white
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s
+
+.admin-city-btn-remove
+    text-color: $color-white
+    background-color: $color-red
+    border-color: $color-red
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s    
+
+.admin-city-btn-remove:hover
+    background-color: $color-red
+    opacity: 0.8
+    cursor: pointer
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s
+
+.admin-city-btn-red
+    width: 76%
+    text-color: $color-white
+    background-color: $color-red
+    border-color: $color-red
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s  
+
+.admin-city-btn-red:hover
+    background-color: $color-red
+    border-color: $color-red
+    opacity: 0.8
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s
+
+.admin-disttrict-item
+    font-family: $font-main
+    color: $color-dark-blue
+    font-size: 16px
+    font-weight: 700
+    border: 1px solid $color-dark-blue
+    padding: 2px 2px 2px 5px
+    border-radius: 5px
+    margin-bottom: 2px
+    min-width: 145px
+
+.admin-btngroup
+    min-width: 250px
+    display: flex
+    gap: 4px 
+
+.admin-city-btn-header
+    font-family: $font-main
+    color: $color-dark-blue
+    font-size: 23px
+    font-weight: 700
+
+.admin-district-btn-wrp
+    min-width: 250px
+    display: flex
+    flex-direction: column
+    gap: 10px
+
+.admin-district-btn-remove
+    width: 28px
+    color: $color-red
+    border: 1px solid $color-red
+    border-radius: 5px
+    background-color: $color-white
+    height: 29px
+    margin-left: 10px
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s
+
+.admin-district-btn-remove:hover
+    background-color: $color-grey
+    transition: 0.5s
+    -webkit-transition: 0.5s
+    -moz-transition: 0.5s
+
+.admin-input-city
+    width: 76%
+
+.admin-main
+    display: flex
+    flex-direction: column
+    align-items: center
+    background-color: #eef2f6
+    border-radius: 10px
+    width: 100%
+
+.admin-sorter
+    width: 270px
+    margin-bottom: 15px
+
+.admin-card-item-propertties
+    display: flex
+    // flex-direction: column
+
+.admin-card-item-propertties p
+    font-family: $font-main
+    color: $color-dark-blue
+    font-weight: 400 
+    margin-right: 15px
+
+.admin-card-item-propertties span
+    color: $color-red
+
+
+.admin-card-item-price
+    font-family: $font-main
+    color: $color-dark-blue
+    font-weight: 400 
+    font-size: 18px
+    margin-bottom: 0
+
+.admin-card-item-price span
+    font-weight: 700 
+
+.admin-card-item
+    height: 260px
+    display: flex
+    flex-direction: column
+
+.admin-card-item-main
+    display: flex
+    height: 200px
+
+.admin-card-item-settings
+    padding: 10px
+    display: flex
+    justify-content: flex-end
+
+.admin-remove-btn
+
+.admin-edit-btn 
+    background-color: $color-blue
+    margin-left: 20px
+
+.admin-landlord-btn
+    background-color: $color-red
+
+.admin-landlord-btn:active
+    box-shadow: 2px 2px 3px grey
+
+.admin-card-input-header
+    width: 600px
+    margin-bottom: 10px
+
+.admin-card-id
+    color: rgba(33, 37, 41, 0.75)
+    font-size: 16px
+    font-weight: 400
+
+.admin-textarea
+    height: 100px
+
+.admin-card-input-price
+    width: 200px
+
+.admin-card-input-price-wrp
+    display: flex
+
+.admin-card-input-price-wrp p
+    font-family: $font-main
+    color: $color-dark-blue
+    font-weight: 700 
+    font-size: 25px
+    margin-left: 7px
+    margin-bottom: 0
+
+.admin-card-input-item
+    width: 208px
+    margin: 2px 0 2px 0
+
+.admin-card-input-select
+    width: 207px
+    margin: 2px 0
+    height: 38px
+
+.admin-cover
+    display: flex
+    justify-content: center
+    align-items: center
+    position: fixed
+    z-index: 100
+    width: 100%
+    height: 100vh
+    top: 0
+    left: 0
+    background: rgba(102, 102, 102, 0.6)
+
+.confirm-window
+    width: 400px
+    height: 150px
+
+.confirm-window-header
+    font-family: $font-main
+    color: $color-dark-blue
+    margin-top: 27px
+
+.confirm-window-btn-group
+    display: flex
+
+.confirm-window-btn
+    width: 117px
+    margin: 10px
+
+
+
+
 /* -- IMPORTANT -- */
 
 
@@ -1481,8 +1763,6 @@ input::-webkit-inner-spin-button
         padding: 15px 0 0 50px
         font-size: 32px
 
-    .landlords-main
-        width: 100%
 
 @media(max-width: 768px)
     .filter-buttons
@@ -1553,6 +1833,10 @@ input::-webkit-inner-spin-button
     .contacts-main
         margin: 0
         padding: 10px    
+
+    .exit-admin-btn
+        right: 14px
+        top: 83px
 
 
 @media(max-width: 677px)
@@ -1640,6 +1924,9 @@ input::-webkit-inner-spin-button
 
     .card-component-main
         padding: 0 5px
+
+    .exit-admin-btn
+        width: 20%
 
 
 @media(max-width: 429px)

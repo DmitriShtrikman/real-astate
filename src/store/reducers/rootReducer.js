@@ -13,6 +13,7 @@ import regionDataBaseReducer from "./regionDataBaseReducer";
 import searchReducer from "./searchReduser";
 import sorterValueReducer from "./sorterValueReducer";
 import userAgreementReducer from "./userAgreemetReducer";
+import UsersDataBaseReducer from "./usersDataBaseReduser";
 
 const rootReducer = combineReducers ({
     currency: currencyReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers ({
     page: pageReducer,
     pageParam: pageParamReducer,
     fullDataBase: dataBaseReducer,
+    usersDataBase: UsersDataBaseReducer,
     chosenObject: objectReducer,
     sorterValue: sorterValueReducer,
     agreementValue: userAgreementReducer,

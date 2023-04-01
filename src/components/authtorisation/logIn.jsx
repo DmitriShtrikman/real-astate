@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { checkuser } from "../../server/googleFirebase";
+import { checkadmin, checkuser } from "../../server/googleFirebase";
+import AdminPanel from "../admin/adminPanel";
 import SendForm from "../sendForm/sendForm";
 
 export const LogIn = () => {
@@ -7,6 +8,7 @@ export const LogIn = () => {
     const navigate = useNavigate();
 
     const isAuth = checkuser();
+    const isAdmin = checkadmin();
 
     const handleSignIn = (e) => {
         e.preventDefault();
@@ -17,6 +19,11 @@ export const LogIn = () => {
         e.preventDefault();
         navigate("/landlords/signup")
     };
+
+
+// TODO Delete before prod
+    // return <AdminPanel />
+// - ** - //
 
     if (!isAuth) {    
         return (
@@ -30,6 +37,9 @@ export const LogIn = () => {
             </div>            
             </>
         );
+    }
+    if(isAdmin) {
+        return <AdminPanel />
     }
     return <SendForm />
 }

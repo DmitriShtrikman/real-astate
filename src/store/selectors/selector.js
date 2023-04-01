@@ -16,6 +16,9 @@ export const getPageParamValue = (state) => {
 export const getFullDataBase = (state) => {
     return state.fullDataBase
 };
+export const getUsersDataBase = (state) => {
+    return state.usersDataBase  
+};
 export const getRegionsDataBase = (state) => {
     return state.regions
 };

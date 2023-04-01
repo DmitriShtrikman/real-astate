@@ -113,7 +113,7 @@ export const SignIn = () => {
                         <label htmlFor="floatingPassword">Пароль</label>
                     </div>  
                     <ReCAPTCHA
-                        sitekey="6Lei1lAkAAAAAAsM0OCH0XVajpCHwnGvsoAeyK-D"
+                        sitekey={process.env.REACT_APP_SITE_KEY}
                         onChange={handleRecaptcha}
                     />  
                     {loading && 

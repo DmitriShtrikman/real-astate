@@ -24,14 +24,12 @@ const analytics = getAnalytics(app);
 const auth = getAuth(app);
 
 export const database = getDatabase(app);
-export const dataDeployRef = ref(database, 'deployDb');
-export const dataRef = ref(database, 'fulldb');
+export const dataUsersRef = ref(database, 'fulldb');
+export const dataRef = ref(database, 'deployDb');
 export const regionDataRef = ref(database, 'regions');
 export const userRef = ref(database, 'users');
 
-console.log(analytics);
-
-export const getPostById = (userId) => ref(database, `users/${userId}`)
+// console.log(regionDataRef);
 
 export const signUp = async (email, password) => {
     await createUserWithEmailAndPassword(auth, email, password)
@@ -59,5 +57,17 @@ export const checkuser = () => {
         return true
     } else {
         return false
+    }
+};
+
+export const checkadmin = () => {
+    if(auth.currentUser) {
+        if (auth.currentUser.uid === process.env.REACT_APP_UID && auth.currentUser.email === process.env.REACT_APP_E_MAIL) {
+            return true
+        } else {
+            return false;
+        }
+    } else {
+        return false;
     }
 };
